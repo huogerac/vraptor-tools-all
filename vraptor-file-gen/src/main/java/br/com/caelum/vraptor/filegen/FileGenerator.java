@@ -10,19 +10,33 @@ import java.io.InputStream;
 
 public class FileGenerator {
 	
+	private static final String MAVEN_PACKAGE_JAVA = "src/main/java/";
+	
+	private static final String MAVEN_PACKAGE_WEBAPP = "src/main/webapp/";
+	
 	private final String package_root;
 	
 	private String package_java;
 	
-	public static String package_web = "src/main/webapp/";
+	private String package_webapp;
 	
-	public static String package_jsp = package_web + "WEB-INF/jsp/";
+	//public static String package_jsp = package_web + "WEB-INF/jsp/";
 	
 	public FileGenerator(String package_root) {
 		this.package_root = package_root;
-		this.package_java = "src/main/java/" + package_root.replaceAll("\\.", "/") + "/";
+		usingSource(MAVEN_PACKAGE_JAVA).usingWebapp(MAVEN_PACKAGE_WEBAPP);
 	}
 	
+	public FileGenerator usingSource(String javasource) {
+		javasource += package_root;
+		this.package_java = javasource.replaceAll("\\.", "/") + "/";
+		return this;
+	}
+	
+	public FileGenerator usingWebapp(String webapp) {
+		this.package_webapp = webapp;
+		return this;
+	}	
 	
 	public boolean generateModel(String modelname) throws Exception {
 		
@@ -57,7 +71,7 @@ public class FileGenerator {
 		String modelname_lowercase = modelname.toLowerCase();
 		
 		FileSystem.createFolder(package_java + "controller");
-		FileSystem.createFolder(package_jsp + modelname_lowercase);
+		FileSystem.createFolder(package_webapp + "WEB-INF/jsp/" + modelname_lowercase);
 		
 		
 		String template = "Controller_" + method + ".tpl";
@@ -76,7 +90,7 @@ public class FileGenerator {
 		is = FileGenerator.class.getClassLoader().getResourceAsStream(template);
 		
 		modelStr = this.generateSource(is, modelname);
-		newFile = FileSystem.writeNewFile(package_jsp + modelname_lowercase + "/" + method + ".jsp");
+		newFile = FileSystem.writeNewFile(package_webapp + "WEB-INF/jsp/" + modelname_lowercase + "/" + method + ".jsp");
 		file = this.saveToFile(newFile, modelStr.getBytes());
 		
 		template = "Index_" + method + ".tpl";
@@ -84,7 +98,7 @@ public class FileGenerator {
 		
 		modelStr = this.generateSource(is, modelname);
 		
-		newFile = FileSystem.read(package_web + "index.jsp");
+		newFile = FileSystem.read(package_webapp + "index.jsp");
 		String index = FileSystem.readContent(newFile);
 		
 		int pos = index.lastIndexOf("</ul>");
