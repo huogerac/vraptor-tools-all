@@ -40,29 +40,31 @@ public class FileGenerator {
 	
 	public boolean generateModel(String modelname) throws Exception {
 		
-		FileSystem.createFolder(package_java + "model");
-		FileSystem.createFolder(package_java + "dao");
 
-		String template = "Model.tpl";
+		File file = createFileFromTemplate(modelname, "model", "Model.tpl");
+		
+		file = createFileFromTemplate(modelname + "DAO", "dao", "DAO.tpl");
+		
+		return file.exists();
+	}
+
+	private File createFileFromTemplate(String modelname, String subfolder, String template) throws Exception {
+		
+		subfolder += "/";
+		FileSystem.createFolder(package_java + subfolder);
+		
 		InputStream is = FileGenerator.class.getClassLoader().getResourceAsStream(template);
 		
 		String modelStr = this.generateSource(is, modelname);
 		
-		File newFile = FileSystem.writeNewFile(package_java + "model/" + modelname + ".java");
+		File newFile = FileSystem.writeNewFile(package_java + subfolder + modelname + ".java");
 		File file = this.saveToFile(newFile, modelStr.getBytes());
 		
 		if (!file.exists()) {
 			throw new Exception("Error creating file");
 		}
 		
-		template = "DAO.tpl";
-		is = FileGenerator.class.getClassLoader().getResourceAsStream(template);
-		
-		modelStr = this.generateSource(is, modelname);
-		newFile = FileSystem.writeNewFile(package_java + "dao/" + modelname + "DAO.java");
-		file = this.saveToFile(newFile, modelStr.getBytes());		
-		
-		return file.exists();
+		return file;
 	}
 	
 	
