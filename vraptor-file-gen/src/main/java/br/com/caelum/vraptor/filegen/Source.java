@@ -1,6 +1,10 @@
 package br.com.caelum.vraptor.filegen;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -14,16 +18,23 @@ public class Source {
 	
 	private Template template;
 	
+	private File file;
+	
 	public Source(String filename, String packagename) {
 		this.filename = filename;
 		this.packagename = packagename;
+	}
+	
+	public Source(File file) {
+		this.file = file;
+		this.content = FileSystem.readContent(file);
 	}
 	
 	public Source usingTemplate(Template template) {
 		this.template = template;
 		return this;
 	}
-	
+		
 	public Source generateSource() {
 
 		InputStream is = template.getTemplate();
@@ -56,6 +67,12 @@ public class Source {
 		
 	}	
 	
+	public Source updateSourceBefore(String text, String new_content) {
+		int pos = content.lastIndexOf(text);
+		this.content = content.substring(0, pos) + new_content + content.substring(pos, content.length());
+		return this;
+	}
+	
     public static void replace(StringBuffer code, String marker, String newCode) {
         int posMarker = code.indexOf(marker);
         while (posMarker >= 0) {
@@ -67,5 +84,42 @@ public class Source {
 	public String getContent() {
 		return this.content;
 	}
+
+	public void savefile() throws Exception {
+		ByteArrayInputStream is = new ByteArrayInputStream(content.getBytes());
+		File outputfile = this.file;
+		FileOutputStream out;
+		
+		try {
+			
+			out = new FileOutputStream(outputfile);
+			byte buf[]=new byte[1024];
+			int len;
+
+			while ((len=is.read(buf))>0)
+				out.write(buf,0,len);
+			
+			out.close();
+			is.close();
+			
+		} catch (FileNotFoundException e) {
+			throw e;
+		} catch (IOException e) {
+			throw e;
+		}
+		
+		
+	}
+
+	public Source savenewfile(String filename, String subfolder) throws Exception {
+		subfolder += "/";
+		FileSystem.createFolder(subfolder);
+
+		this.file = FileSystem.writeNewFile(subfolder + filename);
+		
+		this.savefile();
+		return this;
+	}
+		
 
 }
