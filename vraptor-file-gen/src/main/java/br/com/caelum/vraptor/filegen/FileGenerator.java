@@ -47,16 +47,20 @@ public class FileGenerator {
 	}
 
 	private File createFileFromTemplate(String modelname, String filename, String subfolder, String template) throws Exception {
-		
-		subfolder += "/";
-		FileSystem.createFolder(subfolder);
-		
-		InputStream is = FileGenerator.class.getClassLoader().getResourceAsStream(template);
+		InputStream is = readTemplate(template);
 		
 		String modelStr = this.generateSource(is, modelname);
 		
+		return createSource(filename, subfolder, modelStr);
+	}
+
+	
+	private File createSource(String filename, String subfolder, String content) throws Exception {
+		subfolder += "/";
+		FileSystem.createFolder(subfolder);
+
 		File newFile = FileSystem.writeNewFile(subfolder + filename);
-		File file = this.saveToFile(newFile, modelStr.getBytes());
+		File file = this.saveToFile(newFile, content.getBytes());
 		
 		if (!file.exists()) {
 			throw new Exception("Error creating file");
@@ -65,35 +69,38 @@ public class FileGenerator {
 		return file;
 	}
 	
-	
 	public boolean generateController(String modelname, String method) throws Exception {
 		
 		File file = createFileFromTemplate(modelname, modelname + "Controller.java", package_java + "controller", "Controller_" + method + ".tpl");
 	
-		
 		String modelname_lowercase = modelname.toLowerCase();
 		
 		file = createFileFromTemplate(modelname, method + ".jsp", package_webapp + "WEB-INF/jsp/" + modelname_lowercase, "JSP_" + method + ".tpl");
 		
-		String template = "Index_" + method + ".tpl";
-		InputStream is = FileGenerator.class.getClassLoader().getResourceAsStream(template);
+		file = updateFileFromTemplate(modelname, package_webapp + "index.jsp", "Index_" + method + ".tpl");
 		
+		return file.exists();
+	}	
+	
+	private File updateFileFromTemplate(String modelname, String filename, String template) throws Exception {
+		InputStream is = readTemplate(template);
 		String modelStr = this.generateSource(is, modelname);
 		
-		File newFile = FileSystem.read(package_webapp + "index.jsp");
+		File newFile = FileSystem.read(filename);
 		String index = FileSystem.readContent(newFile);
 		
 		int pos = index.lastIndexOf("</ul>");
 		
 		String new_content = index.substring(0, pos) + modelStr + index.substring(pos, index.length());
 		
-		file = this.saveToFile(newFile, new_content.getBytes());		
-		
-		return file.exists();
-	}	
+		File file = this.saveToFile(newFile, new_content.getBytes());		
+		return file;
+	}
 	
-	
-	
+	private InputStream readTemplate(String filename) {
+		InputStream is = FileGenerator.class.getClassLoader().getResourceAsStream(filename);
+		return is;
+	}
 	
 	
 	private String generateSource(InputStream is, String modelname) {
