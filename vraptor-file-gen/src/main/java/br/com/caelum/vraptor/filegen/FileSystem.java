@@ -84,7 +84,22 @@ public class FileSystem {
 
 
 	public static File createFolder(String filename) throws FileGeneratorException {
-		File file = new File(filename);
+
+		File file = null;
+		
+		String d = "";
+		String[] subdir = filename.split("/");
+		for (int i = 0; i < subdir.length; i++) {
+			d += subdir[i] + "/";
+			file = createDirectory(d);
+		}
+
+		return file;
+	}
+	
+	private static File createDirectory(String directory) throws FileGeneratorException {
+		File file = new File(directory);
+		
 		
 		if (file.exists() && file.canWrite()) {
 			return file;

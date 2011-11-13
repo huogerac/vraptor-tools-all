@@ -20,8 +20,6 @@ public class FileGenerator {
 	
 	private String package_webapp;
 	
-	//public static String package_jsp = package_web + "WEB-INF/jsp/";
-	
 	public FileGenerator(String package_root) {
 		this.package_root = package_root;
 		usingSource(MAVEN_PACKAGE_JAVA).usingWebapp(MAVEN_PACKAGE_WEBAPP);
@@ -41,23 +39,23 @@ public class FileGenerator {
 	public boolean generateModel(String modelname) throws Exception {
 		
 
-		File file = createFileFromTemplate(modelname, "model", "Model.tpl");
+		File file = createFileFromTemplate(modelname, modelname + ".java", package_java + "model", "Model.tpl");
 		
-		file = createFileFromTemplate(modelname + "DAO", "dao", "DAO.tpl");
+		file = createFileFromTemplate(modelname + "DAO", modelname + "DAO.java", package_java + "dao", "DAO.tpl");
 		
 		return file.exists();
 	}
 
-	private File createFileFromTemplate(String modelname, String subfolder, String template) throws Exception {
+	private File createFileFromTemplate(String modelname, String filename, String subfolder, String template) throws Exception {
 		
 		subfolder += "/";
-		FileSystem.createFolder(package_java + subfolder);
+		FileSystem.createFolder(subfolder);
 		
 		InputStream is = FileGenerator.class.getClassLoader().getResourceAsStream(template);
 		
 		String modelStr = this.generateSource(is, modelname);
 		
-		File newFile = FileSystem.writeNewFile(package_java + subfolder + modelname + ".java");
+		File newFile = FileSystem.writeNewFile(subfolder + filename);
 		File file = this.saveToFile(newFile, modelStr.getBytes());
 		
 		if (!file.exists()) {
@@ -70,37 +68,19 @@ public class FileGenerator {
 	
 	public boolean generateController(String modelname, String method) throws Exception {
 		
+		File file = createFileFromTemplate(modelname, modelname + "Controller.java", package_java + "controller", "Controller_" + method + ".tpl");
+	
+		
 		String modelname_lowercase = modelname.toLowerCase();
 		
-		FileSystem.createFolder(package_java + "controller");
-		FileSystem.createFolder(package_webapp + "WEB-INF/jsp/" + modelname_lowercase);
+		file = createFileFromTemplate(modelname, method + ".jsp", package_webapp + "WEB-INF/jsp/" + modelname_lowercase, "JSP_" + method + ".tpl");
 		
-		
-		String template = "Controller_" + method + ".tpl";
+		String template = "Index_" + method + ".tpl";
 		InputStream is = FileGenerator.class.getClassLoader().getResourceAsStream(template);
 		
 		String modelStr = this.generateSource(is, modelname);
 		
-		File newFile = FileSystem.writeNewFile(package_java + "controller/" + modelname + "Controller.java");
-		File file = this.saveToFile(newFile, modelStr.getBytes());
-		
-		if (!file.exists()) {
-			throw new Exception("Error creating file");
-		}
-		
-		template = "JSP_" + method + ".tpl";
-		is = FileGenerator.class.getClassLoader().getResourceAsStream(template);
-		
-		modelStr = this.generateSource(is, modelname);
-		newFile = FileSystem.writeNewFile(package_webapp + "WEB-INF/jsp/" + modelname_lowercase + "/" + method + ".jsp");
-		file = this.saveToFile(newFile, modelStr.getBytes());
-		
-		template = "Index_" + method + ".tpl";
-		is = FileGenerator.class.getClassLoader().getResourceAsStream(template);
-		
-		modelStr = this.generateSource(is, modelname);
-		
-		newFile = FileSystem.read(package_webapp + "index.jsp");
+		File newFile = FileSystem.read(package_webapp + "index.jsp");
 		String index = FileSystem.readContent(newFile);
 		
 		int pos = index.lastIndexOf("</ul>");
@@ -108,8 +88,6 @@ public class FileGenerator {
 		String new_content = index.substring(0, pos) + modelStr + index.substring(pos, index.length());
 		
 		file = this.saveToFile(newFile, new_content.getBytes());		
-		
-		
 		
 		return file.exists();
 	}	
