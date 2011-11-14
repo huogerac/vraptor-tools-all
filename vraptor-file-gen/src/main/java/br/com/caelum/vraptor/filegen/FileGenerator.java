@@ -64,7 +64,6 @@ public class FileGenerator {
 
 		String modelname_lowercase = modelname.toLowerCase();
 		source = new Source(method);
-		source.setPackage(package_webapp);
 		source.setExtension("jsp");
 		source.setModelname(modelname);
 		source.usingTemplate(template).generateSource().savenewfileTo(package_webapp + "WEB-INF/jsp/" + modelname_lowercase);
@@ -72,7 +71,6 @@ public class FileGenerator {
 		template = new Template("Index_" + method + ".tpl");
 		
 		source = new Source("index");
-		source.setPackage(package_webapp);
 		source.setModelname(modelname);
 		source.usingTemplate(template).generateSource();
 		
