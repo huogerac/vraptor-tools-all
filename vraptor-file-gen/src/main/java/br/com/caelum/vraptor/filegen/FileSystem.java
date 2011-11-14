@@ -1,8 +1,10 @@
 package br.com.caelum.vraptor.filegen;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -122,6 +124,29 @@ public class FileSystem {
 			throw new FileGeneratorException("Error creating: " + filename);
 		}
 		return file;
+	}
+	
+	public static void writeToFile(File outputfile, byte[] content) throws Exception {
+		ByteArrayInputStream is = new ByteArrayInputStream(content);
+		FileOutputStream out;
+		
+		try {
+			
+			out = new FileOutputStream(outputfile);
+			byte buf[]=new byte[1024];
+			int len;
+
+			while ((len=is.read(buf))>0)
+				out.write(buf,0,len);
+			
+			out.close();
+			is.close();
+			
+		} catch (FileNotFoundException e) {
+			throw e;
+		} catch (IOException e) {
+			throw e;
+		}
 	}
 
 

@@ -1,10 +1,7 @@
 package br.com.caelum.vraptor.filegen;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -94,29 +91,7 @@ public class Source {
 	}
 
 	public void savefile() throws Exception {
-		ByteArrayInputStream is = new ByteArrayInputStream(content.getBytes());
-		File outputfile = this.file;
-		FileOutputStream out;
-		
-		try {
-			
-			out = new FileOutputStream(outputfile);
-			byte buf[]=new byte[1024];
-			int len;
-
-			while ((len=is.read(buf))>0)
-				out.write(buf,0,len);
-			
-			out.close();
-			is.close();
-			
-		} catch (FileNotFoundException e) {
-			throw e;
-		} catch (IOException e) {
-			throw e;
-		}
-		
-		
+		FileSystem.writeToFile(this.file, content.getBytes());
 	}
 
 	public Source savenewfileTo(String subfolder) throws Exception {
