@@ -38,25 +38,7 @@ public class Source {
 		
 	public Source generateSource() {
 
-		InputStream is = template.getTemplate();
-		String content_temp = "";
-		
-        try {
-        	
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-
-            while (is.available() > 0) {
-                baos.write(is.read());
-            }
-            
-            content_temp = baos.toString();
-            is.close();
-            
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        
-        StringBuffer code = new StringBuffer(content_temp);
+        StringBuffer code = new StringBuffer(template.getContent());
         
         replace(code, "%PACKAGE%", packagename);
         replace(code, "%SOURCENAME%", source);
