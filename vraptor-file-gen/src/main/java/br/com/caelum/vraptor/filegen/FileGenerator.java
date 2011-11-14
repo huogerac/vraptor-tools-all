@@ -34,19 +34,18 @@ public class FileGenerator {
 		
 		Template template = new Template("Model.tpl");
 		
-		String filename = modelname + ".java";
-		String subfolder = package_java + "model";
 		Source source = new Source(modelname);
 		source.setPackage(package_root);
-		source.usingTemplate(template).generateSource().savenewfile(filename, subfolder);
+		source.setExtension("java");
+		source.usingTemplate(template).generateSource().savenewfileTo(package_java + "model");
 		
 		template = new Template("DAO.tpl");
 		
-		filename = modelname + "DAO.java";
-		subfolder = package_java + "dao";
-		source = new Source(modelname);
+		source = new Source(modelname + "DAO");
 		source.setPackage(package_root);
-		source.usingTemplate(template).generateSource().savenewfile(filename, subfolder);
+		source.setExtension("java");
+		source.setModelname(modelname);
+		source.usingTemplate(template).generateSource().savenewfileTo(package_java + "dao");
 		
 		return true;
 	}
@@ -55,25 +54,26 @@ public class FileGenerator {
 
 		Template template = new Template("Controller_" + method + ".tpl");
 		
-		String filename = modelname + "Controller.java";
-		String subfolder = package_java + "controller";
-		Source source = new Source(modelname);
+		Source source = new Source(modelname + "Controller");
 		source.setPackage(package_root);
-		source.usingTemplate(template).generateSource().savenewfile(filename, subfolder);
+		source.setExtension("java");
+		source.setModelname(modelname);
+		source.usingTemplate(template).generateSource().savenewfileTo(package_java + "controller");
 		
 		template = new Template("JSP_" + method + ".tpl");
 
 		String modelname_lowercase = modelname.toLowerCase();
-		filename = method + ".jsp";
-		subfolder = package_webapp + "WEB-INF/jsp/" + modelname_lowercase;
 		source = new Source(method);
 		source.setPackage(package_webapp);
-		source.usingTemplate(template).generateSource().savenewfile(filename, subfolder);
+		source.setExtension("jsp");
+		source.setModelname(modelname);
+		source.usingTemplate(template).generateSource().savenewfileTo(package_webapp + "WEB-INF/jsp/" + modelname_lowercase);
 		
 		template = new Template("Index_" + method + ".tpl");
 		
 		source = new Source("index");
 		source.setPackage(package_webapp);
+		source.setModelname(modelname);
 		source.usingTemplate(template).generateSource();
 		
 		File existingIndex = FileSystem.read(package_webapp + "index.jsp");

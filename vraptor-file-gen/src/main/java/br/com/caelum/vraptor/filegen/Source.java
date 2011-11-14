@@ -12,9 +12,13 @@ public class Source {
 	
 	private final String source;
 	
+	private String extension;
+	
 	private String packagename;
 
 	private String content;
+	
+	private String modelname;
 	
 	private Template template;
 	
@@ -58,8 +62,12 @@ public class Source {
         StringBuffer code = new StringBuffer(content_temp);
         
         replace(code, "%PACKAGE%", packagename);
-        replace(code, "%MODELNAME%", source);
-        replace(code, "%MODELNAME_LOWERCASE%", source.toLowerCase());
+        replace(code, "%SOURCENAME%", source);
+        replace(code, "%SOURCENAME_LOWERCASE%", source.toLowerCase());
+        if (modelname != null) {
+        	replace(code, "%MODELNAME%", modelname);
+        	replace(code, "%MODELNAME_LOWERCASE%", modelname.toLowerCase());
+        }
 		
         this.content = code.toString();
         
@@ -111,10 +119,11 @@ public class Source {
 		
 	}
 
-	public Source savenewfile(String filename, String subfolder) throws Exception {
+	public Source savenewfileTo(String subfolder) throws Exception {
 		subfolder += "/";
 		FileSystem.createFolder(subfolder);
 
+		String filename = this.source + "." + this.extension;
 		this.file = FileSystem.writeNewFile(subfolder + filename);
 		
 		this.savefile();
@@ -123,6 +132,18 @@ public class Source {
 
 	public void setPackage(String packagename) {
 		this.packagename = packagename;
+	}
+
+	public void setExtension(String extension) {
+		this.extension = extension;
+	}
+
+	public String getModelname() {
+		return modelname;
+	}
+
+	public void setModelname(String modelname) {
+		this.modelname = modelname;
 	}
 
 }
