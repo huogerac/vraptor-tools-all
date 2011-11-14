@@ -1,4 +1,4 @@
-<%@ include file="/header.jsp" %> 
+<%@ include file="/header.jsp" %>
 
 <h1>%MODELNAME%</h1>
 <table>
@@ -9,4 +9,4 @@
 	</c:forEach>
 </table>
 
-<%@ include file="/footer.jsp" %> 
+<%@ include file="/footer.jsp" %>

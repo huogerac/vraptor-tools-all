@@ -53,4 +53,34 @@ public class SourceTest {
 		
 	}
 	
+	@Test
+	public void generateJspSource() throws Exception {
+		
+		//dado um template
+		Template template = new Template("JSP_list.tpl");
+
+		//Quando gerado um fonte 
+		Source source = new Source("list");
+		source.usingTemplate(template).generateSource();
+		
+		//Entao 
+		String expected = 
+		"<%@ include file=\"/header.jsp\" %>\n" + 
+		"\n" +
+		"<h1>list</h1>\n" +
+		"<table>\n" +
+		"	<c:forEach var=\"list\" items=\"${list_list}\">\n" +
+		"		<tr>\n" +
+		"			<td>${list}</td>\n" +
+		"		</tr>\n" +
+		"	</c:forEach>\n" +
+		"</table>\n" +
+		"\n" +
+		"<%@ include file=\"/footer.jsp\" %>";
+		
+		assertEquals(expected, source.getContent());
+		
+	}
+	
+	
 }
