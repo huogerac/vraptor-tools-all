@@ -1,9 +1,6 @@
 package br.com.caelum.vraptor.filegen;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 
 public class Source {
 	
@@ -20,6 +17,8 @@ public class Source {
 	private Template template;
 	
 	private File file;
+	
+	private CodeFormatter codeformatter = new CodeFormatter();
 	
 	public Source(String source) {
 		this.source = source;
@@ -38,35 +37,25 @@ public class Source {
 		
 	public Source generateSource() {
 
-        StringBuffer code = new StringBuffer(template.getContent());
-        
-        replace(code, "%PACKAGE%", packagename);
-        replace(code, "%SOURCENAME%", source);
-        replace(code, "%SOURCENAME_LOWERCASE%", source.toLowerCase());
+		codeformatter.addConverter("%PACKAGE%", packagename);
+		codeformatter.addConverter("%SOURCENAME%", source);
+		codeformatter.addConverter("%SOURCENAME_LOWERCASE%", source.toLowerCase());
         if (modelname != null) {
-        	replace(code, "%MODELNAME%", modelname);
-        	replace(code, "%MODELNAME_LOWERCASE%", modelname.toLowerCase());
+        	codeformatter.addConverter("%MODELNAME%", modelname);
+        	codeformatter.addConverter("%MODELNAME_LOWERCASE%", modelname.toLowerCase());
         }
-		
-        this.content = code.toString();
-        
+
+        this.content = codeformatter.generateSourceFromTemplate(template.getContent());
+                
 		return this;
 		
 	}	
 	
 	public Source updateSourceBefore(String text, String new_content) {
-		int pos = content.lastIndexOf(text);
-		this.content = content.substring(0, pos) + new_content + content.substring(pos, content.length());
+		this.content = codeformatter.updateSourceBefore(text, content, new_content);
 		return this;
 	}
 	
-    public static void replace(StringBuffer code, String marker, String newCode) {
-        int posMarker = code.indexOf(marker);
-        while (posMarker >= 0) {
-        	code.replace(posMarker, posMarker + marker.length(), newCode);
-        	posMarker = code.indexOf(marker);
-        }
-    }
 
 	public String getContent() {
 		return this.content;
