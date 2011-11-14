@@ -1,4 +1,4 @@
-package %PACKAGE%.model;
+package filegen.model;
 
 import org.bson.types.ObjectId;
 
@@ -6,7 +6,7 @@ import com.google.code.morphia.annotations.Entity;
 import com.google.code.morphia.annotations.Id;
 
 @Entity
-public class %MODELNAME%  {
+public class Issue  {
 
 	@Id private ObjectId id;
 

@@ -10,7 +10,7 @@ import java.io.InputStream;
 
 public class Source {
 	
-	private String filename;
+	private final String source;
 	
 	private String packagename;
 
@@ -20,13 +20,13 @@ public class Source {
 	
 	private File file;
 	
-	public Source(String filename, String packagename) {
-		this.filename = filename;
-		this.packagename = packagename;
+	public Source(String source) {
+		this.source = source;
 	}
 	
 	public Source(File file) {
 		this.file = file;
+		this.source = file.getName();
 		this.content = FileSystem.readContent(file);
 	}
 	
@@ -58,8 +58,8 @@ public class Source {
         StringBuffer code = new StringBuffer(content_temp);
         
         replace(code, "%PACKAGE%", packagename);
-        replace(code, "%MODELNAME%", filename);
-        replace(code, "%MODELNAME_LOWERCASE%", filename.toLowerCase());
+        replace(code, "%MODELNAME%", source);
+        replace(code, "%MODELNAME_LOWERCASE%", source.toLowerCase());
 		
         this.content = code.toString();
         
@@ -120,6 +120,9 @@ public class Source {
 		this.savefile();
 		return this;
 	}
-		
+
+	public void setPackage(String packagename) {
+		this.packagename = packagename;
+	}
 
 }

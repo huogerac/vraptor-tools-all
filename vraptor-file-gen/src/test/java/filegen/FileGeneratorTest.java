@@ -20,7 +20,8 @@ public class FileGeneratorTest {
 		
 	}
 	
-	@Test public void generateController() throws Exception  {
+	//@Test
+	public void generateController() throws Exception  {
 		
 		boolean result = fg.generateController("Issue", "list");
 		assertTrue(result);

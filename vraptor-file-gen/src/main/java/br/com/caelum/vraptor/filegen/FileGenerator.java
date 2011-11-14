@@ -36,14 +36,16 @@ public class FileGenerator {
 		
 		String filename = modelname + ".java";
 		String subfolder = package_java + "model";
-		Source source = new Source(modelname, package_root);
+		Source source = new Source(modelname);
+		source.setPackage(package_root);
 		source.usingTemplate(template).generateSource().savenewfile(filename, subfolder);
 		
 		template = new Template("DAO.tpl");
 		
 		filename = modelname + "DAO.java";
 		subfolder = package_java + "dao";
-		source = new Source(modelname, package_root);
+		source = new Source(modelname);
+		source.setPackage(package_root);
 		source.usingTemplate(template).generateSource().savenewfile(filename, subfolder);
 		
 		return true;
@@ -55,7 +57,8 @@ public class FileGenerator {
 		
 		String filename = modelname + "Controller.java";
 		String subfolder = package_java + "controller";
-		Source source = new Source(modelname, package_root);
+		Source source = new Source(modelname);
+		source.setPackage(package_root);
 		source.usingTemplate(template).generateSource().savenewfile(filename, subfolder);
 		
 		template = new Template("JSP_" + method + ".tpl");
@@ -63,12 +66,14 @@ public class FileGenerator {
 		String modelname_lowercase = modelname.toLowerCase();
 		filename = method + ".jsp";
 		subfolder = package_webapp + "WEB-INF/jsp/" + modelname_lowercase;
-		source = new Source(method, package_webapp);
+		source = new Source(method);
+		source.setPackage(package_webapp);
 		source.usingTemplate(template).generateSource().savenewfile(filename, subfolder);
 		
 		template = new Template("Index_" + method + ".tpl");
 		
-		source = new Source("index", package_webapp);
+		source = new Source("index");
+		source.setPackage(package_webapp);
 		source.usingTemplate(template).generateSource();
 		
 		File existingIndex = FileSystem.read(package_webapp + "index.jsp");
