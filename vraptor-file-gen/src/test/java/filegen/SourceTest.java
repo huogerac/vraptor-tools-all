@@ -69,49 +69,35 @@ public class SourceTest {
 		String expected = 
 		"package test.filegen.dao;\n" +
 		"\n" +
-		"import java.net.UnknownHostException;\n" +
+		"import org.bson.types.ObjectId;\n" +
 		"\n" +
+		"import br.com.caelum.vraptor.ioc.Component;\n" +
+		"import test.filegen.common.MongoConfiguration;\n" +
 		"import test.filegen.model.Issue;\n" +
 		"\n" +
 		"import com.google.code.morphia.Morphia;\n" +
 		"import com.google.code.morphia.dao.BasicDAO;\n" +
+		"import com.google.code.morphia.mapping.Mapper;\n" +
+		"import com.google.code.morphia.query.Query;\n" +
 		"import com.mongodb.Mongo;\n" +
-		"import com.mongodb.MongoException;\n" +
 		"\n" +
+		"@Component\n" +
 		"public class IssueDAO extends BasicDAO<Issue, String> {\n" +
 		"\n" +
-		"	private static IssueDAO INSTANCE = null;\n" +
-		"\n" +
-		"	public IssueDAO(Mongo mongo, Morphia morphia, String dbName) {\n" +
-		"		super(mongo, morphia, dbName);\n" +
+		"	public IssueDAO(Mongo mongo, Morphia morphia,\n" + 
+		"			MongoConfiguration configuration) {\n" +
+		"		super(mongo, morphia, configuration.getDbName());\n" +
 		"	}\n" +
 		"\n" +
 		"	public Issue findById(String id) {\n" +
-		"		Issue result = super.getDatastore().find(Issue.class).field(\"id\").equal(id).get();\n" +
+		"		ObjectId objectId = new ObjectId(id);\n" +
+		"		Issue result = super.getDatastore().find(Issue.class).field(\"id\").equal(objectId).get();\n" +
 		"		return result;\n" +
 		"	}\n" +
 		"\n" +	
-		"	//TODO: technical debt - refactoring to dependency injection\n" +
-		"	public static IssueDAO getIssueDAO() {\n" +
-		"\n" +
-		"		if (INSTANCE == null) {\n" +
-		"\n" +
-		"			try {\n" +
-		"\n" +				
-		"				Mongo mongo = new Mongo(\"localhost\", 27017);\n" +
-		"				Morphia morphia = new Morphia();\n" +
-		"				morphia.map(Issue.class);\n" +
-		"\n" +				
-		"				INSTANCE = new IssueDAO(mongo, morphia, \"test\");\n" +
-		"\n" +				
-		"			} catch (UnknownHostException e) {\n" +
-		"				throw new RuntimeException(e);\n" +
-		"			} catch (MongoException e) {\n" +
-		"				throw new RuntimeException(e);\n" +
-		"			}\n" +
-		"		}\n" +
-		"		return INSTANCE;\n" +
-		"	}\n" +
+		"	public Query<Issue> queryToFindMe(ObjectId objectId) {\n" +
+		"		return super.getDatastore().createQuery(Issue.class).field(Mapper.ID_KEY).equal(objectId);\n" +
+		"	}\n\n" +
 		"}";
 		
 		assertEquals(expected, source.getContent());

@@ -4,5 +4,5 @@
 .metadata/
 target/
 src/main/webapp/WEB-INF/classes
-src/test/resources/filegen
-src/test/resources/WEB-INF
+vraptor-file-gen/src/test/resources/filegen
+vraptor-file-gen/src/test/resources/WEB-INF
