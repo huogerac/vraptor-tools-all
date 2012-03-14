@@ -18,9 +18,27 @@ public class ModelMojo extends AbstractMojo {
 	
 	/**
 	 * @required
+	 * @parameter expression="${persistenceAPI}" 
+	 */
+	private String persistenceAPI;
+	
+	/**
+	 * @required
 	 * @parameter expression="${model}" 
 	 */
 	private String model;
+
+	/**
+	 * @required
+	 * @parameter expression="${repository}" 
+	 */	
+	private String repository;
+	
+	/**
+	 * @required
+	 * @parameter expression="${fields}" 
+	 */	
+	private String fields;
 	
 
 	public void execute() throws MojoExecutionException {
@@ -30,10 +48,11 @@ public class ModelMojo extends AbstractMojo {
 
 		display("   package         : " + package_root);
 		display("   generating model: " + model);
-		FileGenerator fg = new FileGenerator(package_root);
+		FileGenerator fg = new FileGenerator(package_root).toPersistenceAPI(persistenceAPI);
+		
 		try {
 			
-			fg.generateModel(model);
+			fg.generateModel(model, repository, fields);
 			
 		} catch (Exception e) {
 			throw new MojoExecutionException(e.getMessage());

@@ -13,7 +13,7 @@ public class SourceTest {
 	public void generateJavaModelSource() throws Exception {
 		
 		//dado um template
-		Template template = new Template("Model.tpl");
+		Template template = new Template("mongodb/Model.tpl");
 
 		//Quando gerado um fonte 
 		Source source = new Source("Issue");
@@ -57,7 +57,7 @@ public class SourceTest {
 	public void generateJavaSource() throws Exception {
 		
 		//dado um template
-		Template template = new Template("DAO.tpl");
+		Template template = new Template("mongodb/DAO.tpl");
 
 		//Quando gerado um fonte 
 		Source source = new Source("IssueDAO");
@@ -109,7 +109,7 @@ public class SourceTest {
 	public void generateJspSource() throws Exception {
 		
 		//dado um template
-		Template template = new Template("JSP_list.tpl");
+		Template template = new Template("mongodb/JSP_list.tpl");
 
 		//Quando gerado um fonte 
 		Source source = new Source("list");
@@ -138,7 +138,7 @@ public class SourceTest {
 	@Test
 	public void saveFile() throws Exception {
 		//dado um template
-		Template template = new Template("Model.tpl");
+		Template template = new Template("mongodb/Model.tpl");
 
 		//Quando gerado um fonte 
 		Source source = new Source("Issue");
@@ -153,7 +153,7 @@ public class SourceTest {
 	@Test
 	public void saveFileWithSufix() throws Exception {
 		//dado um template
-		Template template = new Template("DAO.tpl");
+		Template template = new Template("mongodb/DAO.tpl");
 
 		//Quando gerado um fonte 
 		Source source = new Source("IssueDAO");

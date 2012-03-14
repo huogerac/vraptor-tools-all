@@ -1,6 +1,8 @@
 package br.com.caelum.vraptor.filegen;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Source {
 	
@@ -13,6 +15,10 @@ public class Source {
 	private String content;
 	
 	private String modelname;
+	
+	private List<ModelField> modelFields;
+	
+	private String repositoryname;
 	
 	private Template template;
 	
@@ -44,13 +50,38 @@ public class Source {
         	codeformatter.addConverter("%MODELNAME%", modelname);
         	codeformatter.addConverter("%MODELNAME_LOWERCASE%", modelname.toLowerCase());
         }
-
+        
+        if (repositoryname != null) {
+        	codeformatter.addConverter("%REPOSITORYNAME%", repositoryname);
+        }
+        
+        if (modelFields != null) {
+        	String fields_str = generateFields();
+        	codeformatter.addConverter("%FIELDS%", fields_str);
+        }
+        
         this.content = codeformatter.generateSourceFromTemplate(template.getContent());
                 
 		return this;
 		
 	}	
 	
+	private String generateFields() {
+		StringBuilder result = new StringBuilder(); 
+		for (ModelField field: modelFields) {
+			
+			String type = field.getType();
+			if (type == null) {
+				type = "String";
+			}
+			
+			result.append("private ").append(type).append(" ")
+			.append(field.getName()).append(";\n\t");
+		}
+		
+		return result.toString();
+	}
+
 	public Source updateSourceBefore(String text, String new_content) {
 		this.content = codeformatter.updateSourceBefore(text, content, new_content);
 		return this;
@@ -92,4 +123,17 @@ public class Source {
 		this.modelname = modelname;
 	}
 
+	public void setRepositoryname(String repository) {
+		this.repositoryname = repository;
+	}
+	public String getRepositoryname() {
+		return this.repositoryname;
+	}
+
+	public void addModelField(ModelField field) {
+		if ( modelFields == null ) {
+			modelFields = new ArrayList<ModelField>();
+		}
+		modelFields.add(field);
+	}
 }

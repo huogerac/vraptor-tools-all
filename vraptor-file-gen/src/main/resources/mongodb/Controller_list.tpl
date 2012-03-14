@@ -14,11 +14,11 @@ import %PACKAGE%.model.%MODELNAME%;
 public class %MODELNAME%Controller {
 	
 	private final Result result;
+	private %MODELNAME%DAO dao;
 	
-	private %MODELNAME%DAO dao = %MODELNAME%DAO.get%MODELNAME%DAO();
-	
-	public %MODELNAME%Controller(Result result) {
+	public %MODELNAME%Controller(Result result, %MODELNAME%DAO dao) {
 		this.result = result;
+		this.dao = dao;
 	}
 	
 	@Get @Path("/%MODELNAME_LOWERCASE%/list")
