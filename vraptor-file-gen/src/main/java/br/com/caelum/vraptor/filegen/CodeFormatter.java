@@ -36,5 +36,7 @@ public class CodeFormatter {
 		return content.substring(0, pos) + new_content + content.substring(pos, content.length());
 	}
 	
-	
+	public Map<String, String> getConverters() {
+		return this.converters;
+	}
 }

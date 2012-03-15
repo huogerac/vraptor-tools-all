@@ -16,7 +16,7 @@ public class FileGeneratorTest {
 	@Test
 	public void generateModel() throws Exception {
 		
-		boolean result = fg.generateModel("Issue", "AllIssues", "status,description,type:int,test");
+		boolean result = fg.generateModel("Issue", "Issues", "status,description,type:int,test");
 		assertTrue(result);
 		
 	}
@@ -24,7 +24,7 @@ public class FileGeneratorTest {
 	@Test
 	public void generateController() throws Exception  {
 		
-		boolean result = fg.generateController("Issue", "list");
+		boolean result = fg.generateController("Issue", "Issues", "status,description,type:int,test", "crud");
 		assertTrue(result);
 		
 	}

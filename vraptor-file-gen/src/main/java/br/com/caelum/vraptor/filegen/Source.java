@@ -1,8 +1,8 @@
 package br.com.caelum.vraptor.filegen;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class Source {
 	
@@ -21,6 +21,8 @@ public class Source {
 	private String repositoryname;
 	
 	private Template template;
+	
+	private Template fields_template;
 	
 	private File file;
 	
@@ -53,6 +55,7 @@ public class Source {
         
         if (repositoryname != null) {
         	codeformatter.addConverter("%REPOSITORYNAME%", repositoryname);
+        	codeformatter.addConverter("%REPOSITORYNAME_LOWERCASE%", repositoryname.toLowerCase());
         }
         
         if (modelFields != null) {
@@ -67,16 +70,26 @@ public class Source {
 	}	
 	
 	private String generateFields() {
+		
 		StringBuilder result = new StringBuilder(); 
+		
 		for (ModelField field: modelFields) {
 			
 			String type = field.getType();
 			if (type == null) {
 				type = "String";
 			}
+
+			CodeFormatter fcodeformatter = new CodeFormatter();
 			
-			result.append("private ").append(type).append(" ")
-			.append(field.getName()).append(";\n\t");
+			for ( Map.Entry<String, String> entry : codeformatter.getConverters().entrySet() ) {
+				fcodeformatter.addConverter(entry.getKey(), entry.getValue());
+			}
+			
+			fcodeformatter.addConverter("%FIELDNAME%", field.getName());
+			fcodeformatter.addConverter("%FIELDTYPE%", type);
+			
+			result.append( fcodeformatter.generateSourceFromTemplate(fields_template.getContent()) ).append("\n");
 		}
 		
 		return result.toString();
@@ -130,10 +143,11 @@ public class Source {
 		return this.repositoryname;
 	}
 
-	public void addModelField(ModelField field) {
-		if ( modelFields == null ) {
-			modelFields = new ArrayList<ModelField>();
-		}
-		modelFields.add(field);
+	public void setModelFields(List<ModelField> modelFields) {
+		this.modelFields = modelFields;
+	}
+	
+	public void addFieldsTemplate(Template template) {
+		this.fields_template = template;
 	}
 }

@@ -14,7 +14,7 @@ public class %SOURCENAME% implements Serializable {
 	@Id @GeneratedValue
 	private Long id;
 	
-	%FIELDS%
+%FIELDS%
 
 
 	//TODO: getters and setters

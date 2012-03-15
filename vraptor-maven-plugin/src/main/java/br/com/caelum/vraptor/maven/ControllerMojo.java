@@ -18,9 +18,27 @@ public class ControllerMojo extends AbstractMojo {
 	
 	/**
 	 * @required
+	 * @parameter expression="${persistenceAPI}" 
+	 */
+	private String persistenceAPI;
+	
+	/**
+	 * @required
 	 * @parameter expression="${model}" 
 	 */
 	private String model;
+	
+	/**
+	 * @required
+	 * @parameter expression="${repository}" 
+	 */	
+	private String repository;
+	
+	/**
+	 * @required
+	 * @parameter expression="${fields}" 
+	 */	
+	private String fields;
 	
 	/**
 	 * @required
@@ -36,12 +54,15 @@ public class ControllerMojo extends AbstractMojo {
 
 		
 		display("   generating controller to " + model);
-		FileGenerator fg = new FileGenerator(package_root);
+		FileGenerator fg = new FileGenerator(package_root).toPersistenceAPI(persistenceAPI);;
 		try {
 			
-			fg.generateController(model, method);
+			fg.generateController(model, repository, fields, method);
 			
 		} catch (Exception e) {
+			System.out.println("ERROR: ------------------------->");
+			e.printStackTrace();
+			System.out.println(e.getMessage());
 			throw new MojoExecutionException(e.getMessage());
 		}
 		
