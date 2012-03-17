@@ -1,6 +1,5 @@
 package br.com.caelum.vraptor.filegen;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,11 +9,15 @@ public class FileGenerator {
 	
 	private static final String MAVEN_PACKAGE_WEBAPP = "src/main/webapp/";
 	
+	private static final String MAVEN_PACKAGE_RESOURCES = "src/main/resources/";
+	
 	private final String package_root;
 	
 	private String package_java;
 	
 	private String package_webapp;
+	
+	private String package_resources;
 	
 	private String persistenceAPI;
 	
@@ -23,7 +26,7 @@ public class FileGenerator {
 	
 	public FileGenerator(String package_root) {
 		this.package_root = package_root;
-		usingSource(MAVEN_PACKAGE_JAVA).usingWebapp(MAVEN_PACKAGE_WEBAPP);
+		usingSource(MAVEN_PACKAGE_JAVA).usingWebapp(MAVEN_PACKAGE_WEBAPP).usingResources(MAVEN_PACKAGE_RESOURCES);
 	}
 	
 	public FileGenerator usingSource(String javasource) {
@@ -34,6 +37,11 @@ public class FileGenerator {
 	
 	public FileGenerator usingWebapp(String webapp) {
 		this.package_webapp = webapp;
+		return this;
+	}
+	
+	public FileGenerator usingResources(String resources) {
+		this.package_resources = resources;
 		return this;
 	}
 	
@@ -52,6 +60,7 @@ public class FileGenerator {
 		source.setPackage(package_root);
 		source.setExtension("java");
 		source.setModelFields(modelFields);
+		source.setRepositoryname(repository);
 		source.addFieldsTemplate( new Template(persistenceAPI + "/Model_fields.tpl") );
 		source.usingTemplate(template).generateSource().savenewfileTo(package_java + "model");
 		
@@ -73,6 +82,15 @@ public class FileGenerator {
 		source.setModelname(modelname);
 		source.setRepositoryname(repository);
 		source.usingTemplate(template).generateSource().savenewfileTo(package_java + "repository/impl");
+		
+		template = new Template(persistenceAPI + "/HibernateCfg.tpl");
+		
+		source = new Source(package_resources + "hibernate.cfg");
+		source.setExtension("xml");
+		source.setPackage(package_root);
+		source.setModelname(modelname);
+		source.setRepositoryname(repository);
+		source.usingTemplate(template).withThisSourceFile().addContentIn(".+</session-factory>").savefile();
 		
 		return true;
 	}
@@ -125,17 +143,14 @@ public class FileGenerator {
 		source.usingTemplate(template).generateSource().savenewfileTo(package_webapp + "WEB-INF/jsp/" + repositoryname_lowercase);
 		
 		
-		//template = new Template(persistenceAPI + "/Index.tpl");
-		
-		//source = new Source("index");
-		//source.setModelname(modelname);
-		//source.usingTemplate(template).generateSource();
-		
-		//File existingIndex = FileSystem.read(package_webapp + "index.jsp");
-		
-		//Source new_index = new Source(existingIndex);
-		//new_index.updateSourceBefore("</ul>", source.getContent());
-		//new_index.savefile();
+		template = new Template(persistenceAPI + "/Index.tpl");
+
+		source = new Source(package_webapp + "index");
+		source.setExtension("jsp");
+		source.setPackage(package_root);
+		source.setModelname(modelname);
+		source.setRepositoryname(repository);
+		source.usingTemplate(template).withThisSourceFile().addContentIn(".+</ul>").savefile();
 		
 		return true;
 	}

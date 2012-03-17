@@ -2,6 +2,7 @@
 .project
 .settings/
 .metadata/
+.byke/
 target/
 src/main/webapp/WEB-INF/classes
 vraptor-file-gen/src/test/resources/filegen

@@ -10,14 +10,19 @@ public class Template {
 	private InputStream template;
 	private String content;
 	
-	public Template(String filename) {
+	public Template(String filename) throws Exception {
 		this.filename  = filename;
 		readTemplate();
 		convertToString();
 	}
 
-	private void readTemplate() {
+	private void readTemplate() throws Exception {
 		template = FileGenerator.class.getClassLoader().getResourceAsStream(filename);
+		String curDir = System.getProperty("user.dir");
+		System.out.println(curDir);
+		if (template == null) {
+			throw new Exception("ERRO lendo arquivo: " + filename);
+		}
 	}
 	
 	private void convertToString() {

@@ -105,7 +105,7 @@ public class Source {
 		return this.content;
 	}
 
-	public void savefile() throws Exception {
+	public void savefile() throws Exception  {
 		FileSystem.writeToFile(this.file, content.getBytes());
 	}
 
@@ -149,5 +149,41 @@ public class Source {
 	
 	public void addFieldsTemplate(Template template) {
 		this.fields_template = template;
+	}
+
+	public Source withThisSourceFile() throws Exception {
+		String filename = this.source + "." + this.extension;
+		
+		this.content = FileSystem.readContent(new File(filename));
+		this.file = FileSystem.writeNewFile(filename);
+		
+		return this;
+	}
+
+	public Source addContentIn(String regex) {
+		
+		codeformatter.addConverter("%PACKAGE%", packagename);
+		codeformatter.addConverter("%SOURCENAME%", source);
+		codeformatter.addConverter("%SOURCENAME_LOWERCASE%", source.toLowerCase());
+        if (modelname != null) {
+        	codeformatter.addConverter("%MODELNAME%", modelname);
+        	codeformatter.addConverter("%MODELNAME_LOWERCASE%", modelname.toLowerCase());
+        }
+        
+        if (repositoryname != null) {
+        	codeformatter.addConverter("%REPOSITORYNAME%", repositoryname);
+        	codeformatter.addConverter("%REPOSITORYNAME_LOWERCASE%", repositoryname.toLowerCase());
+        }
+        
+        if (modelFields != null) {
+        	String fields_str = generateFields();
+        	codeformatter.addConverter("%FIELDS%", fields_str);
+        }
+        
+        String newContent = codeformatter.generateSourceFromTemplate(template.getContent());
+
+        this.content = content.replaceAll(regex, newContent);
+		
+		return this;
 	}
 }

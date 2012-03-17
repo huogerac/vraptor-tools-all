@@ -143,8 +143,10 @@ public class FileSystem {
 			is.close();
 			
 		} catch (FileNotFoundException e) {
+			System.out.println("ERRO1 - Impossivel gravar em: " + outputfile.getName() );
 			throw e;
 		} catch (IOException e) {
+			System.out.println("ERRO2 - Impossivel gravar em: " + outputfile.getName() );
 			throw e;
 		}
 	}

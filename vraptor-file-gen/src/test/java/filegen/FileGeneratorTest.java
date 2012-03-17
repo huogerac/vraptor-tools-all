@@ -11,6 +11,7 @@ public class FileGeneratorTest {
 	FileGenerator fg = new FileGenerator("filegen")
 							.usingSource("src/test/resources/")
 							.usingWebapp("src/test/resources/")
+							.usingResources("")
 							.toPersistenceAPI(FileGenerator.HIBERNATE);
 	
 	@Test
