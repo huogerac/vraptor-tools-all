@@ -21,10 +21,20 @@ public class FileGenerator {
 	
 	private String persistenceAPI;
 	
+	private final String modelname;
+	
+	private final String fields;
+
+	private final String repository;
+	
+	
 	public static final String HIBERNATE = "hibernate";
 	public static final String MONGODB = "mongodb";
 	
-	public FileGenerator(String package_root) {
+	public FileGenerator(String modelname, String fields, String repository, String package_root) {
+		this.modelname = modelname;
+		this.fields = fields;
+		this.repository = repository;
 		this.package_root = package_root;
 		usingSource(MAVEN_PACKAGE_JAVA).usingWebapp(MAVEN_PACKAGE_WEBAPP).usingResources(MAVEN_PACKAGE_RESOURCES);
 	}
@@ -50,50 +60,70 @@ public class FileGenerator {
 		return this;
 	}
 	
-	public boolean generateModel(String modelname, String repository, String fields) throws Exception {
+	public boolean generateModel() throws Exception {
 		
-		List<ModelField> modelFields = loadFields(fields);
-		
-		Template template = new Template(persistenceAPI + "/Model.tpl");
-		
-		Source source = new Source(modelname);
-		source.setPackage(package_root);
-		source.setExtension("java");
-		source.setModelFields(modelFields);
-		source.setRepositoryname(repository);
-		source.addFieldsTemplate( new Template(persistenceAPI + "/Model_fields.tpl") );
-		source.usingTemplate(template).generateSource().savenewfileTo(package_java + "model");
-		
-		template = new Template(persistenceAPI + "/Repository.tpl");
-		
-		source = new Source(repository);
-		source.setPackage(package_root);
-		source.setExtension("java");
-		source.setModelname(modelname);
-		source.setRepositoryname(repository);
-		source.usingTemplate(template).generateSource().savenewfileTo(package_java + "repository");
+		Source modelfile = generateSourceFromTemplate(modelname, "java", 
+				persistenceAPI + "/Model.tpl", 
+				persistenceAPI + "/Model_fields.tpl");
+		modelfile.savenewfileTo(package_java + "model");
+
+		Source repositoryfile = generateSourceFromTemplate(repository, "java", 
+				persistenceAPI + "/Repository.tpl", 
+				null);
+		repositoryfile.savenewfileTo(package_java + "repository");
 		
 		
-		template = new Template(persistenceAPI + "/DAO.tpl");
+		Source daofile = generateSourceFromTemplate(modelname + "DAO", "java", 
+				persistenceAPI + "/DAO.tpl", 
+				null);
+		daofile.savenewfileTo(package_java + "repository/impl");
+
 		
-		source = new Source(modelname + "DAO");
-		source.setPackage(package_root);
-		source.setExtension("java");
-		source.setModelname(modelname);
-		source.setRepositoryname(repository);
-		source.usingTemplate(template).generateSource().savenewfileTo(package_java + "repository/impl");
-		
-		template = new Template(persistenceAPI + "/HibernateCfg.tpl");
-		
-		source = new Source(package_resources + "hibernate.cfg");
-		source.setExtension("xml");
-		source.setPackage(package_root);
-		source.setModelname(modelname);
-		source.setRepositoryname(repository);
-		source.usingTemplate(template).withThisSourceFile().addContentIn(".+</session-factory>").savefile();
+		Source hibernatefile = updateSourceFromTemplate(package_resources + "hibernate.cfg", "xml",
+				persistenceAPI + "/HibernateCfg.tpl");
+		hibernatefile.addContentIn(".+</session-factory>").savefile();
 		
 		return true;
 	}
+
+	private Source generateSourceFromTemplate(String filename, String extension, String templatename, String templatefieldsname) throws Exception {
+		
+		Source source = new Source(filename);
+		source.setExtension(extension);
+		source.setPackage(package_root);
+		source.setModelname(modelname);
+		source.setRepositoryname(repository);
+		
+		Template template = new Template(templatename);
+		
+		if (templatefieldsname != null) {
+			Template templatefields = new Template(templatefieldsname);
+			source.addFieldsTemplate( templatefields );
+			
+			List<ModelField> modelFields = loadFields(fields);
+			source.setModelFields(modelFields);
+		}
+		source.usingTemplate(template).generateSource(); //.savenewfileTo(package_java + "model");
+		
+		return source;
+	}
+	
+
+	private Source updateSourceFromTemplate(String filename, String extension,
+			String templatename) throws Exception {
+
+		Source source = new Source(filename);
+		source.setExtension(extension);
+		source.setPackage(package_root);
+		source.setModelname(modelname);
+		source.setRepositoryname(repository);
+		
+		Template template = new Template(templatename);
+		source.usingTemplate(template).withThisSourceFile();
+		
+		return source;
+	}
+	
 	
 	public boolean generateController(String modelname, String repository, String fields, String method) throws Exception {
 

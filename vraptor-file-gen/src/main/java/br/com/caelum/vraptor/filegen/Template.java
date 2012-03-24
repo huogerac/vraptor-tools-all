@@ -18,8 +18,6 @@ public class Template {
 
 	private void readTemplate() throws Exception {
 		template = FileGenerator.class.getClassLoader().getResourceAsStream(filename);
-		String curDir = System.getProperty("user.dir");
-		System.out.println(curDir);
 		if (template == null) {
 			throw new Exception("ERRO lendo arquivo: " + filename);
 		}
