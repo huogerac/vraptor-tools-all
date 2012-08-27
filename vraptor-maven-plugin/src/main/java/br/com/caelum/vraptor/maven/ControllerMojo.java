@@ -54,7 +54,7 @@ public class ControllerMojo extends AbstractMojo {
 
 		
 		display("   generating controller to " + model);
-		FileGenerator fg = new FileGenerator(package_root).toPersistenceAPI(persistenceAPI);;
+		FileGenerator fg = new FileGenerator(model, repository, fields, package_root).toPersistenceAPI(persistenceAPI);
 		try {
 			
 			fg.generateController(model, repository, fields, method);

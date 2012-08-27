@@ -18,6 +18,7 @@
 		<property name="hibernate.cache.provider_class">org.hibernate.cache.HashtableCacheProvider</property>
 
 		<mapping class="filegen.model.Issue" />
+		<mapping class="filegen.model.Issue" />
 	</session-factory>
 
 </hibernate-configuration>

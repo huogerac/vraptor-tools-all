@@ -48,11 +48,12 @@ public class ModelMojo extends AbstractMojo {
 
 		display("   package         : " + package_root);
 		display("   generating model: " + model);
-		FileGenerator fg = new FileGenerator(package_root).toPersistenceAPI(persistenceAPI);
+		//FileGenerator fg = new FileGenerator(package_root).toPersistenceAPI(persistenceAPI);
+		FileGenerator fg = new FileGenerator(model, fields, repository, package_root).toPersistenceAPI(persistenceAPI);
 		
 		try {
 			
-			fg.generateModel(model, repository, fields);
+			fg.generateModel();
 			
 		} catch (Exception e) {
 			throw new MojoExecutionException(e.getMessage());

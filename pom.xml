@@ -8,7 +8,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>br.com.caelum.vraptor</groupId>
 	<artifactId>vraptor-tools-all</artifactId>
-	<version>0.0.1</version>
+	<version>0.0.2</version>
 	<packaging>pom</packaging>
 	<name>VRAPTOR - Tools</name>
 	
